@@ -1,0 +1,2 @@
+45 is an odd number
+46 is an even number

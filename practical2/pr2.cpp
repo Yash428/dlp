@@ -72,7 +72,7 @@ public:
                 }
             }
         }
-        cout<<curr;
+        cout<<curr<<endl;
 
         for(int i=0;i<nFinal;i++){
             if(curr==finalState[i]){
@@ -82,7 +82,6 @@ public:
         }
         cout<<"Invalid";
     }
-
 };
 
 int main()
@@ -90,6 +89,9 @@ int main()
     DFA d;
     d.set();
     //d.get();
-    d.AcceptString("ab");
+    string s;
+    cout<<"Add I/p string: ";
+    cin>>s;
+    d.AcceptString(s);
     return 0;
 }
