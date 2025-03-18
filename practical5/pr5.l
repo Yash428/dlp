@@ -1,75 +1,42 @@
 %{
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
-#define KEYWORD      1
-#define IDENTIFIER   2
-#define CONSTANT     3
-#define OPERATOR     4
-#define PUNCTUATION  5
 
-void print_token(const char* type, const char* value) {
-    printf("Token: %-12s Value: %s\n", type, value);
-}
-
+int is_keyword(char *word);
 %}
-
-DIGIT       [0-9]
-LETTER      [a-zA-Z_]
-ALPHANUM    ({LETTER}|{DIGIT})
-IDENTIFIER  {LETTER}{ALPHANUM}*
-INT_CONST   {DIGIT}+
-FLOAT_CONST {DIGIT}+"."{DIGIT}*
-OPERATOR    "+"|"-"|"*"|"/"|"="|"=="|"!="|"<"|">"|"<="|">="|"&&"|"||"|"!"
-PUNCTUATION ";"|","|"("|")"|"{"|"}"|"["|"]"
 
 %%
 
-"//".*      ; // Skip single-line comments
-"/*"        { BEGIN(COMMENT); } // Start of multi-line comment
-<COMMENT>"*/" { BEGIN(INITIAL); } // End of multi-line comment
-<COMMENT>\n   ; // Skip newlines inside multi-line comments
-<COMMENT>.    ; // Skip any character inside multi-line comments
+"auto"|"break"|"case"|"char"|"const"|"continue"|"default"|"do"|"double"|"else"|"enum"|"extern"|"float"|"for"|"goto"|"if"|"inline"|"int"|"long"|"register"|"restrict"|"return"|"short"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"void"|"volatile"|"while"  { printf("Keyword: %s\n", yytext); }
 
-"auto"|"break"|"case"|"char"|"const"|"continue"|"default"|"do"|"double"|"else"|"enum"|"extern"|"float"|"for"|"goto"|"if"|"int"|"long"|"register"|"return"|"short"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"void"|"volatile"|"while" {
-    print_token("KEYWORD", yytext);
-}
+[a-zA-Z_][a-zA-Z0-9_]*   { printf("Identifier: %s\n", yytext); }
+[0-9]+                    { printf("Constant: %s\n", yytext); }
+"'".[^']*"'"             { printf("String: %s\n", yytext); }
+[{}()\[\],;]              { printf("Punctuation: %s\n", yytext); }
+[=+\-*/%<>!&|]            { printf("Operator: %s\n", yytext); }
+"//".*                   { /* Ignore single-line comments */ }
+"/*"([^*]|\*+[^*/])*"*/" { /* Ignore multi-line comments */ }
 
-{IDENTIFIER} {
-    print_token("IDENTIFIER", yytext);
-}
-
-{INT_CONST}|{FLOAT_CONST} {
-    print_token("CONSTANT", yytext);
-}
-
-{OPERATOR} {
-    print_token("OPERATOR", yytext);
-}
-
-{PUNCTUATION} {
-    print_token("PUNCTUATION", yytext);
-}
-
-[ \t\n]+   ;
-
-. {
-    printf("Error: Unrecognized character '%s'\n", yytext);
-}
+[ \t\n]+                  { /* Ignore whitespace */ }
+.                         { printf("Lexical Error: %s\n", yytext); }
 
 %%
 
 int main() {
-    FILE *file;
-    file = fopen("test1.c","r");
-    if(!file){
-              printf("Error");
+    char filename[100];
+    strcpy(filename,"test1.c");
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        perror("Error opening file");
+        return 1;
     }
     yyin = file;
     yylex();
-
-    fclose(yyin);
-
+    fclose(file);
     return 0;
 }
-int yywrap() {}
 
+int yywrap() {
+    return 1;
+}
