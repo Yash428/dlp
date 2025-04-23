@@ -4,6 +4,7 @@ using namespace std;
 map<char, set<char>> first, follow;
 map<char, vector<string>> grammar;
 char startSymbol;
+set<char> non_terminals;
 
 void computeFirst(char symbol) {
     if (!first[symbol].empty()) return;
@@ -54,7 +55,7 @@ int main() {
     int n;
     cout << "Enter number of productions: ";
     cin >> n;
-    set<char> non_terminals;
+    //set<char> non_terminals;
     for (int i = 0; i < n; i++) {
         string prod;
         cout << "Enter productions (e.g., S->AB|a): ";
@@ -66,10 +67,10 @@ int main() {
     }
 
     for(auto it = non_terminals.begin();it!=non_terminals.end();it++){
-        //cout<<*it<<" ";
-        for(auto it1=grammar[*it].begin();it1!=grammar[*it].end();it1++){
+        cout<<*it<<" ";
+        /*for(auto it1=grammar[*it].begin();it1!=grammar[*it].end();it1++){
             cout<<*it1<<" ";
-        }
+        }*/
         computeFirst(*it);
     }
     for(auto it = non_terminals.begin();it!=non_terminals.end();it++){
